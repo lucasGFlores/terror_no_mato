@@ -1,0 +1,3 @@
+/Users/eduardogoulartdebem/Projects/clang/c++/terror_no_mato/build/CMakeFiles/game.dir
+/Users/eduardogoulartdebem/Projects/clang/c++/terror_no_mato/build/CMakeFiles/edit_cache.dir
+/Users/eduardogoulartdebem/Projects/clang/c++/terror_no_mato/build/CMakeFiles/rebuild_cache.dir

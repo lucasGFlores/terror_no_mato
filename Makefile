@@ -1,43 +1,47 @@
+# === TARGET & DIRECTORIES ===
 TARGET = game
-
 SRC_DIR = src
 OBJ_DIR = obj
 INC_DIR = include
 
-#Flags to compile
+# === Compiler & Flags ===
 CXX = g++
 CXXFLAGS = -Wall -std=c++17 -I$(INC_DIR)
 
-# links to compile in the project like: raylib, thread, OpenGL...
-LIBS = -lraylib -lm -ldl -lpthread -lGL -lX11
+# Add raylib include path (Homebrew default)
+RAYLIB_PREFIX := $(shell brew --prefix raylib)
+CXXFLAGS += -I$(RAYLIB_PREFIX)/include
 
-#Procura todos os arquivos .cpp em src/
+# === Libraries for macOS ===
+LIBS = -L$(RAYLIB_PREFIX)/lib -lraylib -lm -lpthread \
+       -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
+
+# === Source / Object Files ===
 SRCS = $(wildcard $(SRC_DIR)/*.cpp)
-
-#Converte os nomes dos arquivos .cpp em .o (fazendo uma lista de nomes)
 OBJS = $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRCS))
 
+# === Default target ===
 all: $(TARGET)
 
-#compiling .cpp to .o files
+# === Compile .cpp → .o ===
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
-	@echo "OBJS: $(OBJS)"
-	@echo "compiling $< ..."
-	@mkdir -p $(dir $@)
+	@echo "Compiling $< ..."
 	$(CXX) $(CXXFLAGS) -c $< -o $@
-#Generating the executable file
+
+# === Link objects into executable ===
 $(TARGET): $(OBJS)
-	@echo "SRCS: echo "SRC_DIR=[$(SRC_DIR)]""
-	@echo "Linking the .o arquivos to $(TARGET)"
+	@echo "Linking objects into $(TARGET) ..."
 	$(CXX) $(OBJS) -o $(TARGET) $(LIBS)
 
-# Garante que a pasta obj existe
+# === Ensure obj folder exists ===
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
 
-# Comando pra limpar tudo
+# === Clean everything ===
 clean:
 	rm -rf $(OBJ_DIR) $(TARGET)
 
-# Comando pra recompilar do zero
+# === Rebuild from scratch ===
 rebuild: clean all
+
+.PHONY: all clean rebuild
