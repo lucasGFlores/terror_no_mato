@@ -1,8 +1,0 @@
-[
-{
-  "directory": "/Users/eduardogoulartdebem/Projects/clang/c++/terror_no_mato/build",
-  "command": "/usr/bin/c++  -I/Users/eduardogoulartdebem/Projects/clang/c++/terror_no_mato/include -I/opt/homebrew/include -std=c++2b -arch arm64 -o CMakeFiles/game.dir/src/game.cpp.o -c /Users/eduardogoulartdebem/Projects/clang/c++/terror_no_mato/src/game.cpp",
-  "file": "/Users/eduardogoulartdebem/Projects/clang/c++/terror_no_mato/src/game.cpp",
-  "output": "CMakeFiles/game.dir/src/game.cpp.o"
-}
-]
