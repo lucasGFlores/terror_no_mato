@@ -50,3 +50,15 @@ elseif(UNIX)
     target_include_directories(${PROJECT_NAME} PRIVATE ${RAYLIB_INCLUDE})
     target_link_libraries(${PROJECT_NAME} PRIVATE ${RAYLIB_LIB} m dl pthread GL X11)
 endif()
+
+# --- TinyGLTF ---
+find_path(TINYGLTF_INCLUDE tiny_gltf.h 
+    HINTS /usr/include /usr/local/include)
+
+if(NOT TINYGLTF_INCLUDE)
+    message(WARNING "tinygltf not found in system, using header-only from include/")
+    # Se não achar, assume que você colocou manualmente em include/
+else()
+    target_include_directories(${PROJECT_NAME} PRIVATE ${TINYGLTF_INCLUDE})
+    message(STATUS "Found tinygltf at: ${TINYGLTF_INCLUDE}")
+endif()
