@@ -15,12 +15,9 @@ private:
   ModelLoader model;
   Matrix orientationMatrix;
   Camera3D camera;
-  Body body;
   Controls controler;
 
   void ConfigCamera() {
-    body = {0};
-    body.headLerp = STAND_HEIGHT;
     orientationMatrix = CriarMatrizComQuaternion({0.0f}, {0.0f}, {0.0f});
     camera = {0};
     camera.fovy = 60.0f;
