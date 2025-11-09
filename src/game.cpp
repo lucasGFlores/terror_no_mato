@@ -43,6 +43,9 @@
 
 #define NORMALIZE_INPUT 0
 
+// Game Configuration
+#define MAX_TREES 30
+#define MAP_SIZE 125
 //----------------------------------------------------------------------------------
 // Types and Structures Definition
 //----------------------------------------------------------------------------------
@@ -53,6 +56,14 @@ typedef struct {
   Vector3 dir;
   bool isGrounded;
 } Body;
+
+typedef struct {
+  Vector3 position;
+  float radius;
+  float height;
+  Color trunkColor;
+  Color foliageColor;
+} Tree;
 
 //----------------------------------------------------------------------------------
 // Global Variables Definition
@@ -66,14 +77,19 @@ static float walkLerp = 0.0f;
 static float headLerp = STAND_HEIGHT;
 static Vector2 lean = {0};
 
+// Game Elements
+static Tree trees[MAX_TREES];
+
 //----------------------------------------------------------------------------------
 // Module Functions Declaration
 //----------------------------------------------------------------------------------
-static void DrawLevel(void);
+static void DrawEnvironment(void);
 static void UpdateCameraFPS(Camera *camera);
 static void UpdateBody(Body *body, float rot, char side, char forward,
                        bool jumpPressed, bool crouchHold);
-
+static float RandomFloat(float min, float max);
+static void GenerateRandomTrees(void);
+static void DrawTree(Tree tree);
 //------------------------------------------------------------------------------------
 // Program main entry point
 //------------------------------------------------------------------------------------
@@ -102,6 +118,8 @@ int main(void) {
   UpdateCameraFPS(&camera); // Update camera parameters
 
   DisableCursor(); // Limit cursor to relative movement inside the window
+
+  GenerateRandomTrees();
 
   SetTargetFPS(60); // Set our game to run at 60 frames-per-second
   //--------------------------------------------------------------------------------------
@@ -152,7 +170,7 @@ int main(void) {
     ClearBackground(RAYWHITE);
 
     BeginMode3D(camera);
-    DrawLevel();
+    DrawEnvironment();
     EndMode3D();
 
     // Draw info box
@@ -345,4 +363,54 @@ static void DrawLevel(void) {
 
   // Red sun
   DrawSphere((Vector3){300.0f, 300.0f, 0.0f}, 100.0f, (Color){255, 0, 0, 255});
+}
+
+void DrawEnvironment(void) {
+  // Floor (black Forest)
+  const int floorExtent = (int) (MAP_SIZE / 5.0f);
+  const float tileSize = 5.0f;
+  const Color groundColorBlackGreen1 = (Color){20, 60, 20, 255};
+  const Color groundColorBlackGreen2 = (Color){15, 50, 15, 255};
+
+  for (int y = -floorExtent; y < floorExtent; y++) {
+    for (int x = -floorExtent; x < floorExtent; x++) {
+      Color color = ((y & 1) == (x & 1)) ? groundColorBlackGreen1 : groundColorBlackGreen2;
+      DrawPlane((Vector3){x * tileSize, 0.0f, y * tileSize}, (Vector2){tileSize, tileSize}, color);
+    }
+  }
+
+  // Trees
+  for (int i = 0; i < MAX_TREES; i++) {
+    DrawTree(trees[i]);
+  }
+}
+
+void DrawTree(Tree tree) {
+  // Trunk
+  DrawCylinder(tree.position, tree.radius, tree.radius, tree.height, 8, tree.trunkColor);
+
+  // Foliage
+  Vector3 foliagePos = (Vector3) {
+    tree.position.x,
+    tree.position.y + tree.height * 0.7f,
+    tree.position.z};
+  DrawCylinder(foliagePos, tree.radius * 3.0f, tree.radius * 0.5f, tree.height * 0.5f, 8, tree.foliageColor);
+}
+
+void GenerateRandomTrees(void) {
+  for (int i = 0; i < MAX_TREES; i++) {
+    trees[i].position = (Vector3) {
+      RandomFloat(-MAP_SIZE, MAP_SIZE),
+      0.0f,
+      RandomFloat(-MAP_SIZE, MAP_SIZE)};
+    trees[i].radius = RandomFloat(0.4f, 0.8f);
+    trees[i].height = RandomFloat(8.0f, 15.0f);
+    trees[i].trunkColor = (Color){101, 67, 33, 255};
+    trees[i].foliageColor = (Color){34, 139, 34, 255};
+
+  }
+}
+
+float RandomFloat(float min, float max) {
+  return min + (float)rand() / (float) (RAND_MAX / (max - min));
 }
